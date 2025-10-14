@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Confirmed - Mediminder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin-bottom: 24px;
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-20px);
+            }
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .loading-icon {
+            width: 100px;
+            height: 100px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #1f2937;
+            margin-bottom: 16px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .info-box {
+            background: #f3f4f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-box h3::before {
+            content: "📱";
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .step-text {
+            color: #4b5563;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .app-link {
+            display: inline-block;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 16px;
+            transition: all 0.3s;
+        }
+
+        .app-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .close-text {
+            color: #9ca3af;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .error-text {
+            color: #ef4444;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .retry-button {
+            display: inline-block;
+            padding: 12px 24px;
+            background: #6366f1;
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .retry-button:hover {
+            background: #4f46e5;
+        }
+
+        #content {
+            display: none;
+        }
+
+        #content.show {
+            display: block;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .subtitle {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading State -->
+    <div class="container" id="loadingState">
+        <div class="loading-icon">
+            <div class="spinner"></div>
+        </div>
+        <h1>Verifying Your Email...</h1>
+        <p class="subtitle">Please wait while we confirm your email address.</p>
+    </div>
+
+    <!-- Success State -->
+    <div class="container" id="content">
+        <div class="success-icon">✓</div>
+        
+        <div class="badge">✅ Email Verified</div>
+        
+        <h1>Welcome to MedReminder! 🎉</h1>
+        
+        <p class="subtitle">
+            Your email has been successfully verified. You're all set to start tracking your medications!
+        </p>
+
+        <div class="info-box">
+            <h3>Next Steps:</h3>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-text">Close this browser window</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">Open the MedReminder app on your phone</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">Sign in with your email and password</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-text">Start adding your medications and never miss a dose!</div>
+            </div>
+        </div>
+
+        <a href="#" class="app-link" onclick="window.close(); return false;">
+            Return to App
+        </a>
+
+        <p class="close-text">
+            You can safely close this window and return to the app.
+        </p>
+    </div>
+
+    <!-- Error State -->
+    <div class="container" id="errorState" style="display: none;">
+        <div class="error-icon">✗</div>
+        
+        <h1>Verification Failed</h1>
+        
+        <p class="error-text" id="errorMessage">
+            This verification link is invalid or has expired.
+        </p>
+
+        <div class="info-box">
+            <h3>What to do next:</h3>
+            
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-text">Open the MedReminder app</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-text">Try signing in with your credentials</div>
+            </div>
+            
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-text">If you can't sign in, create a new account</div>
+            </div>
+        </div>
+
+        <a href="#" class="app-link" onclick="window.close(); return false;">
+            Back to App
+        </a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ⚠️ IMPORTANT: Replace these with your actual Supabase credentials
+        const SUPABASE_URL = 'https://dlkyytmobjzhzivwowcb.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRsa3l5dG1vYmp6aHppdndvd2NiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk1NzIzNjUsImV4cCI6MjA3NTE0ODM2NX0.8ylqRyk-5DjjOCQjSUcbq---G959IZeeDi6F0nJxNAc';
+
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const loadingState = document.getElementById('loadingState');
+        const content = document.getElementById('content');
+        const errorState = document.getElementById('errorState');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Function to show success
+        function showSuccess() {
+            loadingState.style.display = 'none';
+            content.classList.add('show');
+            errorState.style.display = 'none';
+            
+            // Auto-close after 5 seconds
+            setTimeout(() => {
+                window.close();
+            }, 5000);
+        }
+
+        // Function to show error
+        function showError(message) {
+            loadingState.style.display = 'none';
+            content.classList.remove('show');
+            errorState.style.display = 'block';
+            errorMessage.textContent = message;
+        }
+
+        // Check verification status on load
+        window.addEventListener('load', async () => {
+            try {
+                // Get the hash from URL (contains the token)
+                const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                const accessToken = hashParams.get('access_token');
+                const type = hashParams.get('type');
+
+                console.log('Verification type:', type);
+                console.log('Has access token:', !!accessToken);
+
+                // Check if this is an email confirmation
+                if (type === 'signup' || type === 'email' || type === 'invite') {
+                    if (accessToken) {
+                        // Set the session with the token
+                        const { data, error } = await supabaseClient.auth.setSession({
+                            access_token: accessToken,
+                            refresh_token: hashParams.get('refresh_token') || ''
+                        });
+
+                        if (error) {
+                            console.error('Session error:', error);
+                            showError('Verification failed. Please try signing in to the app.');
+                            return;
+                        }
+
+                        // Verify the session is valid
+                        const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+
+                        if (userError || !user) {
+                            console.error('User error:', userError);
+                            showError('Could not verify user. Please try signing in to the app.');
+                            return;
+                        }
+
+                        // Success!
+                        console.log('Email verified successfully for user:', user.email);
+                        showSuccess();
+                    } else {
+                        showError('Invalid verification link. Please request a new verification email from the app.');
+                    }
+                } else {
+                    // Unknown type or no type
+                    const { data: { session } } = await supabaseClient.auth.getSession();
+                    
+                    if (session) {
+                        showSuccess();
+                    } else {
+                        showError('This link is invalid or has expired. Please try signing in to the app.');
+                    }
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                showError('An unexpected error occurred. Please try signing in to the app.');
+            }
+        });
+
+        // Handle auth state changes
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            console.log('Auth event:', event);
+            
+            if (event === 'SIGNED_IN' && session) {
+                showSuccess();
+            }
+        });
+    </script>
+</body>
+</html>
