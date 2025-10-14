@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mediminder Auth</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        p {
+            color: #6b7280;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 30px auto;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .status {
+            display: inline-block;
+            background: #eef2ff;
+            color: #6366f1;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <div class="logo">🏥</div>
+        <h1>MedReminder</h1>
+        <div class="spinner"></div>
+        <p>Redirecting you to the right place...</p>
+        <div class="status">Processing</div>
+    </div>
+
+    <script>
+        // Auto-detect and redirect based on URL hash
+        const hash = window.location.hash;
+        const params = new URLSearchParams(hash.substring(1));
+        const type = params.get('type');
+        
+        console.log('Router received:', {
+            hash: hash,
+            type: type,
+            fullURL: window.location.href
+        });
+
+        // Determine where to redirect
+        if (type === 'recovery' || hash.includes('type=recovery')) {
+            // Password reset
+            console.log('Redirecting to password reset...');
+            window.location.href = './reset-password.html' + hash;
+        } 
+        else if (type === 'signup' || type === 'email' || type === 'invite' || 
+                 hash.includes('type=signup') || hash.includes('type=email')) {
+            // Email confirmation
+            console.log('Redirecting to email confirmation...');
+            window.location.href = './confirm-email.html' + hash;
+        }
+        else if (hash && hash.length > 1) {
+            // Has some hash but type is unknown, default to confirmation
+            console.log('Unknown type, defaulting to email confirmation...');
+            window.location.href = './confirm-email.html' + hash;
+        }
+        else {
+            // No hash at all - show info page
+            console.log('No hash found, showing info page');
+            document.getElementById('container').innerHTML = `
+                <div class="logo">🏥</div>
+                <h1>MedReminder Auth</h1>
+                <p style="margin-bottom: 20px;">
+                    This page is for email verification and password resets.
+                </p>
+                <p style="font-size: 14px; color: #9ca3af;">
+                    If you need to use the app, please download MedReminder from your app store.
+                </p>
+                <div class="status" style="background: #fef3c7; color: #92400e; margin-top: 30px;">
+                    ℹ️ No action needed
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
